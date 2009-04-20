@@ -1,3 +1,52 @@
+ADDITIONAL FIELD SUPPORT ENHANCEMENT
+====================================
+
+Add support for several Rails forms helpers, when you create an additional field you can now choose the type of HTML field to use.
+
+The default helper is still `text_field` so this enhancement should work without breaking any existing code. 
+
+Here is the list of all available helpers:
+
+		text_field (default)
+		text_area
+		password_field
+		file_field
+		hidden_field
+		check_box
+		radio_button
+		select
+
+The new parameters for the config hash are:
+
+- **:use** - The name of the helper.
+- **:value** - A lambda that will be called to populate the field. This field is mandatory with `radio_button` and `select` helpers, unused  with `check_box` and optional with the others (it'll receive the controller and field as arguments just in case you need it).
+- **:options** - An optional hash that can be used to pass different options ([see RailsFormsHelpers API](http://api.rubyonrails.org/classes/ActionView/Helpers/FormHelper.html)).
+- **:html_options** - An optional hash that can be used to pass options when using `select`.
+- **:checked_value** - Used to set the checked value when using `check_box`, if not set the default value is 1.
+- **:unchecked_value** - Used to set the unchecked value when using `check_box`, if not set the default value is 0.
+
+Examples:
+--------
+
+This code goes in your extension class.
+
+ - Use a check box, with default values
+
+	 `Variant.additional_fields += [ :name => 'Display In Configurator', :only => [:product], :use => 'check_box' ]`
+
+ - Use radio buttons, with values 'yes' and 'no'
+	
+	 `Variant.additional_fields += [ :name => 'Display In Configurator', :only => [:product], :use => 'radio_button', :value => lambda { |controller, field| ['yes', 'no'] } ]`
+
+- Use a select box, filled with a list of authors fetched from the database
+   
+	`Variant.additional_fields += [ :name => 'Author Id', :only => [:product], :use => 'select', :value => lambda { |controller, field| Author.all.collect {|a| [a.fullname, a.id ]} } ]`
+	
+- Use a text_area, with css class 'fullwidth'
+
+	`Variant.additional_fields += [ :name => 'Additional Description', :only => [:product], :use => 'text_area', :options => { :class => 'fullwidth'} ]`
+
+
 SUMMARY
 =======
 
